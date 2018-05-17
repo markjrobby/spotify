@@ -11,6 +11,7 @@ def recurseTracks(spotifyUrl):
     flag = True
     while flag == True:
         response = requests.get(spotifyUrl, headers=headers)
+        print(response)
         blob = response.content
         data = json.loads(blob)
         contents = data["items"]
@@ -18,13 +19,17 @@ def recurseTracks(spotifyUrl):
         #only interested in Track Title, Artist Name, Album Name, ISRC Number
         for i in range(0, len(contents)):
             trackTitle = DictQuery(contents[i]).get("track/name")
-            artist = DictQuery(contents[i]).get("track/artists/name")
+            artistList = DictQuery(contents[i]).get("track/artists/name")
+            artist = ''.join(str(e) for e in artistList)
+            print(type(artist))
             album = DictQuery(contents[i]).get("track/album/name")
             isrc = DictQuery(contents[i]).get("track/external_ids/isrc")
+            spotifyID = DictQuery(contents[i]).get("track/id")
             trackTitles.append(trackTitle)
             artists.append(artist)
             albums.append(album)
             isrcs.append(isrc)
+            spotifyIDs.append(spotifyID)
 
         if data["next"] is not None:
             return recurseTracks(data["next"])
@@ -70,6 +75,7 @@ trackTitles = []
 artists = []
 albums = []
 isrcs = []
+spotifyIDs = []
 
 #call Spotify API
 recurseTracks(url)
@@ -79,7 +85,7 @@ df["Track Title"] = trackTitles
 df["Artist"] = artists
 df["Album"] = albums
 df["ISRC"] = isrcs
+df["Spotify IDs"] = spotifyIDs
 
 #save to csv
 df.to_csv("Spotify.csv")
-
