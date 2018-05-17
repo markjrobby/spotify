@@ -11,7 +11,6 @@ def recurseTracks(spotifyUrl):
     flag = True
     while flag == True:
         response = requests.get(spotifyUrl, headers=headers)
-        print(response)
         blob = response.content
         data = json.loads(blob)
         contents = data["items"]
@@ -21,7 +20,6 @@ def recurseTracks(spotifyUrl):
             trackTitle = DictQuery(contents[i]).get("track/name")
             artistList = DictQuery(contents[i]).get("track/artists/name")
             artist = ''.join(str(e) for e in artistList)
-            print(type(artist))
             album = DictQuery(contents[i]).get("track/album/name")
             isrc = DictQuery(contents[i]).get("track/external_ids/isrc")
             spotifyID = DictQuery(contents[i]).get("track/id")
